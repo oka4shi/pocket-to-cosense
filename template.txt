@@ -1,0 +1,10 @@
+{{given_title}}
+
+#pocketからインポート
+{{% for tag in tags %}}
+{{tag}}
+{{% endfor %}}
+
+[hr.icon]
+
+[{{given_title}} {{given_url}}]
