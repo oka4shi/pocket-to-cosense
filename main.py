@@ -157,7 +157,7 @@ def main():
             }
         )
 
-    with open("output/output.json", "w") as f:
+    with open("output/pocket-export.json", "w") as f:
         f.write(json.dumps(output_json, indent=2, ensure_ascii=False))
 
 
