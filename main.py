@@ -25,13 +25,13 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         data = "Oauth authorization complete. Close this window and return to the terminal."
 
-
         self.send_response(200)
-        self.send_header('Content-Type', 'text/plain; charset=utf-8')
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
         self.end_headers()
 
         # ボディを送信
-        self.wfile.write(data.encode('utf-8'))
+        self.wfile.write(data.encode("utf-8"))
+
 
 def get_access_token(consumer_key, redirect_uri):
     """
@@ -51,7 +51,9 @@ def get_access_token(consumer_key, redirect_uri):
     code = response.get("code")
 
     print("Please visit the following URL to authorize the application:")
-    print(f"https://getpocket.com/auth/authorize?request_token={code}&redirect_uri={redirect_uri}")
+    print(
+        f"https://getpocket.com/auth/authorize?request_token={code}&redirect_uri={redirect_uri}"
+    )
     server = HTTPServer(("0.0.0.0", 8080), HTTPRequestHandler)
     server.handle_request()
 
@@ -61,10 +63,7 @@ def get_access_token(consumer_key, redirect_uri):
         "Content-Type": "application/json; charset=UTF-8",
         "X-Accept": "application/json",
     }
-    data = {
-        "consumer_key": consumer_key,
-        "code": code
-    }
+    data = {"consumer_key": consumer_key, "code": code}
     response = request_url(url, headers=headers, data=data)
 
     return response.get("access_token")
@@ -109,9 +108,9 @@ def get_from_pocket(consumer_key, access_token, limit=-1):
                 continue
 
             fields = {
-                    "title": item.get("given_title") or item.get("resolved_title"),
-                    "url": item.get("given_url") or item.get("resolved_url"),
-                    }
+                "title": item.get("given_title") or item.get("resolved_title"),
+                "url": item.get("given_url") or item.get("resolved_url"),
+            }
             if not fields["title"]:
                 if fields["url"]:
                     fields["title"] = fields["url"]
@@ -130,6 +129,7 @@ def get_from_pocket(consumer_key, access_token, limit=-1):
         offset += count
 
     return result
+
 
 def main():
     consumer_key = os.getenv("POCKET_CONSUMER_KEY")
