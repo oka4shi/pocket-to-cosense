@@ -91,14 +91,15 @@ def get_from_pocket(consumer_key, access_token, limit=-1):
         data = {
             "consumer_key": consumer_key,
             "access_token": access_token,
-            "count": count,
-            "offset": offset,
+            "count": str(count),
+            "offset": str(offset),
+            "total": "1",
             "detailType": "complete",
         }
 
         response = request_url(url, headers=headers, data=data)
 
-        total = response.get("total", 0)
+        total = int(response.get("total", 0))
 
         print(f"{offset + len(response['list'])} / {total}")
         for id in response["list"]:
