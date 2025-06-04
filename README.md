@@ -16,24 +16,24 @@ Pocketがサービス終了するため、中身を移行するために作成�
 
 
 ### アプリケーションの実行
-1. リポジトリをクローン
+1. リポジトリをクローンする
    ```bash
    git clone https://github.com/oka4shi/pocket-to-cosense.git
    cd pocket-to-cosense
    ```
-2. 仮想環境(venv)を作成し依存ライブラリをインストール
+2. 仮想環境(venv)を作成し依存ライブラリをインストールする
    ```bash
     python3 -m venv .venv
     source .venv/bin/activate
     pip install -r requirements.txt
     ```
 
-3. PocketのConsumer Keyを環境変数に設定
+3. PocketのConsumer Keyを環境変数に設定する
     ```bash
     export POCKET_CONSUMER_KEY=xxxxxxxxxxxxxxxxxxxxxxxxx
     ```
 
-4. 8080番のポートが使用中でないことを確認しアプリケーションを実行
+4. 8080番のポートが使用中でないことを確認しアプリケーションを実行する
     ※OAuthのRedirect URIがhttp://localhost:8080に設定されているため
     ```bash
     python main.py
@@ -49,4 +49,12 @@ Pocketがサービス終了するため、中身を移行するために作成�
 3. Page Dataタブを開き、Import Pagesの部分で先程のjsonファイルを選択する
 
 
+## テンプレートの編集
+template.txtを編集することで、Cosenseにインポートされるページの内容をカスタマイズ可能です。
+jinja2を使用して変数を埋め込みできます。
 
+### 使用できる変数
+- [/v3/getエンドポイントのレスポンス](https://getpocket.com/developer/docs/v3/retrieve#:~:text=The%20JSON%20response%20will%20include%20a%20list%20object.%20This%20object%20will%20contain%20all%20of%20the%20items%20that%20matched%20your%20retrieval%20request.%20Each%20item%20may%20or%20may%20not%20contain%20the%20following%20information:)
+
+- `title`: タイトル(重複しないし、空でもない)
+- `url`: URL
