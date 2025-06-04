@@ -1,7 +1,7 @@
 # Pocket to Cosense
 
 ## 概要
-Pocketに保存した記事をエクスポートして、Cosenseに対応したjson形式に変換するツールです。
+Pocketに保存した記事をエクスポートして、Cosense(旧Scrapbox)に対応したjson形式に変換するツールです。
 Pocketがサービス終了するため、中身を移行するために作成しました。
 
 
