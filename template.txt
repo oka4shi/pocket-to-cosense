@@ -6,5 +6,4 @@
 {% endfor %}
 
 [hr.icon]
-
 [{{title}} {{url}}]
