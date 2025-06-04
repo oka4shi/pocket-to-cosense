@@ -1,4 +1,4 @@
-{{given_title}}
+{{title}}
 
 #pocketからインポート
 {% for tag in tags %}
@@ -7,4 +7,4 @@
 
 [hr.icon]
 
-[{{given_title}} {{given_url}}]
+[{{title}} {{url}}]

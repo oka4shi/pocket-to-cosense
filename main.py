@@ -82,6 +82,7 @@ def get_from_pocket(consumer_key, access_token, limit=-1):
         "Content-Type": "application/json; charset=UTF-8",
     }
 
+    titles = []
     result = []
     total = 1
     offset = 0
@@ -100,8 +101,30 @@ def get_from_pocket(consumer_key, access_token, limit=-1):
         total = response.get("total", 0)
 
         print(f"{offset + len(response['list'])} / {total}")
-        for item in response["list"]:
-            result.append(response["list"][item])
+        for id in response["list"]:
+            item = response["list"][id]
+            if item.get("status", 2) == 2:
+                print(f"skipped: {item}")
+                continue
+
+            fields = {
+                    "title": item.get("given_title") or item.get("resolved_title"),
+                    "url": item.get("given_url") or item.get("resolved_url"),
+                    }
+            if not fields["title"]:
+                if fields["url"]:
+                    fields["title"] = fields["url"]
+                else:
+                    print(f"skipped: {item}")
+                    continue
+
+            i = 2
+            while fields["title"] in titles:
+                fields["title"] += f" {i}"
+                i += 1
+
+            titles.append(fields["title"])
+            result.append(fields | item)
 
         offset += count
 
