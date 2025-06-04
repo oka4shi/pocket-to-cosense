@@ -1,8 +1,73 @@
 import json
 import os
-import requests
+import urllib.request
+from http.server import HTTPServer, BaseHTTPRequestHandler
 
 import jinja2
+
+
+def request_url(url, headers=None, data=None):
+    req = urllib.request.Request(url, json.dumps(data).encode(), headers)
+    try:
+        with urllib.request.urlopen(req) as res:
+            response_str = res.read().decode("utf-8")
+            headers = res.getheaders()
+            response = json.loads(response_str)
+    except urllib.error.HTTPError as e:
+        print(f"HTTPError: {e.code} {e.reason}")
+        print(f"Response: {e.headers}")
+        raise e
+
+    return response
+
+
+class HTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        data = "Oauth authorization complete. Close this window and return to the terminal."
+
+
+        self.send_response(200)
+        self.send_header('Content-Type', 'text/plain; charset=utf-8')
+        self.end_headers()
+
+        # ボディを送信
+        self.wfile.write(data.encode('utf-8'))
+
+def get_access_token(consumer_key, redirect_uri):
+    """
+    Retrieves the access token for Pocket using the provided consumer key.
+    """
+    url = "https://getpocket.com/v3/oauth/request"
+    headers = {
+        "Host": "getpocket.com",
+        "Content-Type": "application/json; charset=UTF-8",
+        "X-Accept": "application/json",
+    }
+    data = {
+        "consumer_key": consumer_key,
+        "redirect_uri": redirect_uri,
+    }
+    response = request_url(url, headers=headers, data=data)
+    code = response.get("code")
+
+    print("Please visit the following URL to authorize the application:")
+    print(f"https://getpocket.com/auth/authorize?request_token={code}&redirect_uri={redirect_uri}")
+    server = HTTPServer(("0.0.0.0", 8080), HTTPRequestHandler)
+    server.handle_request()
+
+    url = "https://getpocket.com/v3/oauth/authorize"
+    headers = {
+        "Host": "getpocket.com",
+        "Content-Type": "application/json; charset=UTF-8",
+        "X-Accept": "application/json",
+    }
+    data = {
+        "consumer_key": consumer_key,
+        "code": code
+    }
+    response = request_url(url, headers=headers, data=data)
+
+    return response.get("access_token")
 
 
 def get_from_pocket(consumer_key, access_token, limit=-1):
@@ -29,26 +94,23 @@ def get_from_pocket(consumer_key, access_token, limit=-1):
             "offset": offset,
             "detailType": "complete",
         }
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code != 200:
-            print(f"Error fetching data from Pocket: {response.status_code}")
-            return None
 
-        resp_json = response.json()
-        print(resp_json)
+        response = request_url(url, headers=headers, data=data)
 
-        total = resp_json.get("list", 0)
-        for item in resp_json["list"]:
-            result.append(resp_json["list"][item])
+        total = response.get("total", 0)
+
+        print(f"{offset + len(response['list'])} / {total}")
+        for item in response["list"]:
+            result.append(response["list"][item])
 
         offset += count
 
     return result
 
-
 def main():
     consumer_key = os.getenv("POCKET_CONSUMER_KEY")
-    access_token = os.getenv("POCKET_ACCESS_TOKEN")
+    redirect_uri = os.getenv("POCKET_REDIRECT_URI", "http://localhost:8080")
+    access_token = get_access_token(consumer_key, redirect_uri)
     limit = int(os.getenv("LIMIT", -1))
     data = get_from_pocket(consumer_key, access_token, limit)
     if data is None:
@@ -71,8 +133,8 @@ def main():
             }
         )
 
-    with open("output.json", "w") as f:
-        f.write(json.dumps(output_json, indent=2))
+    with open("output/output.json", "w") as f:
+        f.write(json.dumps(output_json, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":

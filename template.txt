@@ -1,9 +1,9 @@
 {{given_title}}
 
 #pocketからインポート
-{{% for tag in tags %}}
+{% for tag in tags %}
 {{tag}}
-{{% endfor %}}
+{% endfor %}
 
 [hr.icon]
 
