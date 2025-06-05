@@ -29,7 +29,6 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "text/plain; charset=utf-8")
         self.end_headers()
 
-        # ボディを送信
         self.wfile.write(data.encode("utf-8"))
 
 

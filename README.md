@@ -34,7 +34,7 @@ Pocketがサービス終了するため、中身を移行するために作成�
     ```
 
 4. 8080番のポートが使用中でないことを確認しアプリケーションを実行する
-    ※OAuthのRedirect URIがhttp://localhost:8080に設定されているため
+    ※OAuthのRedirect URIが http://localhost:8080 に設定されているため
     ```bash
     python main.py
     ```
